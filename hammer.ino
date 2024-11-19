@@ -34,12 +34,14 @@ int timeout = 30000;
 int currentIndex = 0;
 int buttonPressed = 0;
 int currentStatusButton = 1;
+float timeLeft = 20.0;
+long timer;
+long startTime;
 
 float score = 0;
 
 CRGB currentColour = CRGB(0, 0, 255);
 
-long startTime; 
 
 int melody[] = {
 
@@ -73,13 +75,20 @@ void setup() {
   pinMode(BUZZER_PIN, OUTPUT);
 }
 
-int startFrequency = 200;
+int startFrequency = 100;
 
 void loop() {
   if (gameStarted){
+    //countdown timer on screen
+    if (millis() - timer > 1000){
+      timer = millis();
+      timeLeft--;
+    }
     display.clearDisplay();
     display.setCursor(0, 0);
     display.print(score,0);
+    display.setCursor(0, 32);
+    display.print(timeLeft,0);
     display.display();
     if(millis() - startTime < 20000){
       buttonPressed = digitalRead(BUTTON);
@@ -142,9 +151,10 @@ void loop() {
       score = 0;
       gameStarted = false;
       currentIndex = 0;
+       timeLeft = 20.0;
     }
   } else {
-    startFrequency = 200;
+    startFrequency = 100;
     //this is showing when the game is reset
     for (int i=0; i<40; i++){
         leds[i]=CRGB::Red;
@@ -207,6 +217,7 @@ void loop() {
       delay(500);
       gameStarted = true;
       startTime = millis();
+      timer = millis();
     }
   }
 }
